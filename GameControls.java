@@ -1,5 +1,3 @@
-package com.clara;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -24,21 +22,20 @@ public class GameControls implements KeyListener{
 		
 		DrawSnakeGamePanel panel = (DrawSnakeGamePanel)ev.getComponent();
 
-		if (SnakeGame.getGameStage() == SnakeGame.BEFORE_GAME){
+		if (PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
 			//Start the game
-			SnakeGame.setGameStage(SnakeGame.DURING_GAME);
-			SnakeGame.newGame();
+			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
+			PlaySnake.runSnake();
 			panel.repaint();
 			return;
 		}
 		
-		if (SnakeGame.getGameStage() == SnakeGame.GAME_OVER){
+		if (PlaySnake.getGameStage() == PlaySnake.GAME_OVER){
 			snake.reset();
-			Score.resetScore();
-			
+			SnakeGame.resetScore();
 			//Need to start the timer and start the game again
-			SnakeGame.newGame();
-			SnakeGame.setGameStage(SnakeGame.DURING_GAME);
+			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
+			PlaySnake.runSnake();
 			panel.repaint();
 			return;
 		}

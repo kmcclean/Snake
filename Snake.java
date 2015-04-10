@@ -1,5 +1,3 @@
-package com.clara;
-
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -134,7 +132,7 @@ public class Snake {
 		//Or eat your tail? Don't move. 
 
 		if (hitWall == true || ateTail == true) {
-			SnakeGame.setGameStage(SnakeGame.GAME_OVER);
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
 		}
 
@@ -178,17 +176,15 @@ public class Snake {
 
 		//Does this make snake hit the wall?
 		if (snakeHeadX >= maxX || snakeHeadX < 0 || snakeHeadY >= maxY || snakeHeadY < 0 ) {
-			hitWall = true;	
-			SnakeGame.setGameStage(SnakeGame.GAME_OVER);
+			//hitWall = true;
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
 		}
 
 		//Does this make the snake eat its tail?
-
 		if (snakeSquares[snakeHeadX][snakeHeadY] != 0) {
-
 			ateTail = true;
-			SnakeGame.setGameStage(SnakeGame.GAME_OVER);
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
 		}
 
@@ -268,7 +264,7 @@ public class Snake {
 			}
 		}
 		//But if we get here, the snake has filled the screen. win!
-		SnakeGame.setGameStage(SnakeGame.GAME_WON);
+		PlaySnake.setGameStage(PlaySnake.GAME_WON);
 		
 		return true;
 	}
@@ -283,14 +279,19 @@ public class Snake {
 
 	public boolean isGameOver() {
 		if (hitWall == true || ateTail == true){
-			SnakeGame.setGameStage(SnakeGame.GAME_OVER);
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return true;
-			
 		}
 		return false;
 	}
 
+	public int getSnakeHeadX() {
+		return snakeHeadX;
+	}
 
+	public int getSnakeHeadY() {
+		return snakeHeadY;
+	}
 }
 
 

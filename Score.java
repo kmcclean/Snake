@@ -1,5 +1,3 @@
-package com.clara;
-
 /** Keeps track of, and display the user's score
  * 
  */
