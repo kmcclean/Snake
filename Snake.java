@@ -11,6 +11,9 @@ public class Snake {
 	private boolean hitWall = false;
 	private boolean ateTail = false;
 
+	protected static boolean warpOn = false;
+	public static String warpWallsOn = "Off";
+
 	private int snakeSquares[][];  //represents all of the squares on the screen
 	//NOT pixels!
 	//A 0 means there is no part of the snake in this square
@@ -36,10 +39,16 @@ public class Snake {
 		//Create and fill snakeSquares with 0s 
 		snakeSquares = new int[maxX][maxY];
 		fillSnakeSquaresWithZeros();
-		createStartSnake();
+		startSnake();
 	}
 
-	protected void createStartSnake(){
+	protected void startSnake(){//int maxX, int maxY, int squareSize){
+		/*this.maxX = maxX;
+		this.maxY = maxY;
+		this.squareSize = squareSize;
+		//Create and fill snakeSquares with 0s
+		snakeSquares = new int[maxX][maxY];
+		fillSnakeSquaresWithZeros();*/
 		//snake starts as 3 horizontal squares in the center of the screen, moving left
 		int screenXCenter = (int) maxX/2;  //Cast just in case we have an odd number
 		int screenYCenter = (int) maxY/2;  //Cast just in case we have an odd number
@@ -174,16 +183,25 @@ public class Snake {
 			snakeHeadX ++ ;
 		}
 
-		//Does this make snake hit the wall?
-		if (snakeHeadX >= maxX || snakeHeadX < 0 || snakeHeadY >= maxY || snakeHeadY < 0 ) {
-			//hitWall = true;
-			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
+		if (warpOn){
+			warpWalls();
+		}
+		else{
+			hitWall = hardWalls();
+		}
+
+		if (hitWall){
 			return;
 		}
 
 		//Does this make the snake eat its tail?
 		if (snakeSquares[snakeHeadX][snakeHeadY] != 0) {
 			ateTail = true;
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
+			return;
+		}
+
+		if(hitBlock()){
 			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
 		}
@@ -223,8 +241,8 @@ public class Snake {
 		return ateTail;
 	}
 
-	public boolean isSnakeSegment(int kibbleX, int kibbleY) {
-		if (snakeSquares[kibbleX][kibbleY] == 0) {
+	public boolean isSnakeSegment(int tryX, int tryY) {
+		if (snakeSquares[tryX][tryY] == 0) {
 			return false;
 		}
 		return true;
@@ -235,6 +253,15 @@ public class Snake {
 		if (kibble.getKibbleX() == snakeHeadX && kibble.getKibbleY() == snakeHeadY){
 			justAteMustGrowThisMuch += growthIncrement;
 			return true;
+		}
+		return false;
+	}
+
+	public boolean hitBlock(){
+		for (Blocks b: PlaySnake.blockList) {
+			if (b.getBlockX() == snakeHeadX && b.getBlockY() == snakeHeadY) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -265,7 +292,6 @@ public class Snake {
 		}
 		//But if we get here, the snake has filled the screen. win!
 		PlaySnake.setGameStage(PlaySnake.GAME_WON);
-		
 		return true;
 	}
 
@@ -273,8 +299,7 @@ public class Snake {
 		hitWall = false;
 		ateTail = false;
 		fillSnakeSquaresWithZeros();
-		createStartSnake();
-
+		startSnake();
 	}
 
 	public boolean isGameOver() {
@@ -292,6 +317,36 @@ public class Snake {
 	public int getSnakeHeadY() {
 		return snakeHeadY;
 	}
+
+
+
+	public void warpWalls() {
+		if (snakeHeadX >= maxX) {
+			snakeHeadX = 0;
+		} else if (snakeHeadX < 0) {
+			snakeHeadX = maxX - 1;
+		} else if (snakeHeadY >= maxY) {
+			snakeHeadY = 0;
+		} else if (snakeHeadY < 0) {
+			snakeHeadY = maxY - 1;
+		}
+	}
+
+		//Does this make snake hit the wall?
+		//This is where the hitting the wall comes into play. Greyed out to try warp walls.
+
+	public boolean hardWalls() {
+		if (snakeHeadX >= maxX || snakeHeadX < 0 || snakeHeadY >= maxY || snakeHeadY < 0) {
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public void setMax(int newX, int newY) {
+		this.maxX = newX;
+		this.maxY = newY;
+	}
 }
-
-

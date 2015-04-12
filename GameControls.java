@@ -4,9 +4,15 @@ import java.awt.event.KeyListener;
 public class GameControls implements KeyListener{
 	
 	Snake snake;
-	
-	GameControls(Snake s){
+	Kibble kibble;
+	DrawSnakeGamePanel gamePanel;
+	private static final int START_BUTTON = 10;
+
+
+	GameControls(Snake s, Kibble k, DrawSnakeGamePanel gP){
 		this.snake = s;
+		this.kibble = k;
+		this.gamePanel = gP;
 	}
 	
 	public void keyPressed(KeyEvent ev) {
@@ -15,24 +21,43 @@ public class GameControls implements KeyListener{
 		//Has to id if user pressed arrow key, and if so, send info to Snake object
 
 		//is game running? No? tell the game to draw grid, start, etc.
-		
+
 		//Get the component which generated this event
 		//Hopefully, a DrawSnakeGamePanel object.
 		//It would be a good idea to catch a ClassCastException here. 
-		
-		DrawSnakeGamePanel panel = (DrawSnakeGamePanel)ev.getComponent();
 
-		if (PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
+		char start = ev.getKeyChar();
+		DrawSnakeGamePanel panel = (DrawSnakeGamePanel) ev.getComponent();
+
+		if ((int) start == START_BUTTON&&PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME) {
 			//Start the game
 			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
+			gamePanel.setFrame();
+			snake.startSnake();
+			kibble.placeKibble(snake, gamePanel);
+			if (Blocks.wantsBlocks) {
+				PlaySnake.blockList.clear();
+				for (int i = 1; i <= 5; i++) {
+					Blocks block = new Blocks(snake, gamePanel, kibble);
+					PlaySnake.blockList.add(block);
+				}
+
+			}
+
 			PlaySnake.runSnake();
 			panel.repaint();
 			return;
 		}
-		
-		if (PlaySnake.getGameStage() == PlaySnake.GAME_OVER){
+
+
+		if (PlaySnake.getGameStage() == PlaySnake.GAME_OVER) {
 			snake.reset();
 			SnakeGame.resetScore();
+			kibble.placeKibble(snake, gamePanel);
+
+			for (Blocks b : PlaySnake.blockList) {
+				b.moveBlock(snake, gamePanel, kibble);
+			}
 			//Need to start the timer and start the game again
 			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
 			PlaySnake.runSnake();
@@ -40,7 +65,7 @@ public class GameControls implements KeyListener{
 			return;
 		}
 
-		
+
 		if (ev.getKeyCode() == KeyEvent.VK_DOWN) {
 			//System.out.println("snake down");
 			snake.snakeDown();
@@ -72,8 +97,38 @@ public class GameControls implements KeyListener{
 		//keyTyped events are for user typing letters on the keyboard, anything that makes a character display on the screen
 		char keyPressed = ev.getKeyChar();
 		char q = 'q';
+		char w = 'w';
+		char b = 'b';
+		char s = 's';
 		if( keyPressed == q){
 			System.exit(0);    //quit if user presses the q key.
+		}
+		if(keyPressed == w && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
+			if(Snake.warpOn){
+				Snake.warpOn = false;
+				Snake.warpWallsOn = "Off";
+			}
+			else{
+				Snake.warpOn = true;
+				Snake.warpWallsOn = "On";
+			}
+		}
+		if (keyPressed == b){
+			if (Blocks.wantsBlocks){
+				Blocks.wantsBlocks = false;
+				Blocks.blockString = "Off";
+			}
+			else if (!Blocks.wantsBlocks){
+				Blocks.wantsBlocks = true;
+				Blocks.blockString = "On";
+			}
+		}
+		if (keyPressed == s && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
+			gamePanel.changeSize(snake);
+		}
+
+		if((int)keyPressed == 32){
+			PlaySnake.changeSpeed();
 		}
 	}
 

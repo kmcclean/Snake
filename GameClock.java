@@ -27,10 +27,11 @@ public class GameClock extends TimerTask {
 		int stage = PlaySnake.getGameStage();
 		switch (stage) {
 			case PlaySnake.BEFORE_GAME: {
-				//don't do anything, waiting for user to press a key to start
+
 				break;
 			}
 			case PlaySnake.DURING_GAME: {
+
 				snake.moveSnake();
 				long endTime = System.currentTimeMillis();
 				System.out.println("Time between turns: " + (endTime - PlaySnake.beginTime));
@@ -38,16 +39,18 @@ public class GameClock extends TimerTask {
 
 				if (snake.didEatKibble(kibble) == true) {
 					//tell kibble to update
-					kibble.moveKibble(snake, gamePanel);
+					kibble.placeKibble(snake, gamePanel);
 					SnakeGame.increaseScore();
 				}
 				break;
 			}
 			case PlaySnake.GAME_OVER: {
+
 				this.cancel();		//Stop the Timer
 				break;	
 			}
 			case PlaySnake.GAME_WON: {
+				PlaySnake.resetGame = true;
 				this.cancel();   //stop timer
 				break;
 			}

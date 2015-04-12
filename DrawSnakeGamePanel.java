@@ -10,19 +10,31 @@ import javax.swing.*;
 public class DrawSnakeGamePanel extends JPanel {
 	
 	private static int gameStage = PlaySnake.BEFORE_GAME;  //use this to figure out what to paint
-	
+	static JFrame snakeFrame;
+	static DrawSnakeGamePanel gamePanel;
 	private Snake snake;
 	private Kibble kibble;
 	private int score;
 
+	public static final int SMALL_X = 201;
+	public static final int SMALL_Y = 201;
 
-	public final static int xPixelMaxDimension = 501;  //Pixels in window. 501 to have 50-pixel squares plus 1 to draw a border on last square
-	public final static int yPixelMaxDimension = 501;
+	public static final int MEDIUM_X = 501;
+	public static final int MEDIUM_Y = 501;
+
+	public static final int LARGE_X = 801;
+	public static final int LARGE_Y = 801;
+
+	public static String currentSize = "medium";
+	public static int xPixelMaxDimension = MEDIUM_X;  //Pixels in window. 501 to have 50-pixel squares plus 1 to draw a border on last square
+	public static int yPixelMaxDimension = MEDIUM_Y;
 
 	public final static int squareSize = 50;
 
 	public static int xSquares = xPixelMaxDimension / squareSize ;
 	public static int ySquares = yPixelMaxDimension / squareSize ;
+
+
 
 	DrawSnakeGamePanel(Snake s, Kibble k, int sc){
 		this.snake = s;
@@ -85,14 +97,15 @@ public class DrawSnakeGamePanel extends JPanel {
 		g.drawString("HIGH SCORE = " + textHighScore, 150, 300);
 		g.drawString(newHighScore, 150, 400);
 		
-		g.drawString("press a key to play again", 150, 350);
+		g.drawString("press ENTER to play again", 150, 350);
 		g.drawString("Press q to quit the game",150,400);
 	}
 
 	private void displayGame(Graphics g) {
 		displayGameGrid(g);
 		displaySnake(g);
-		displayKibble(g);	
+		displayKibble(g);
+		displayBlocks(g);
 	}
 
 	private void displayGameGrid(Graphics g) {
@@ -125,6 +138,18 @@ public class DrawSnakeGamePanel extends JPanel {
 		g.fillRect(x+1, y+1, squareSize-1, squareSize-1);
 	}
 
+	private void displayBlocks(Graphics g){
+		g.setColor(Color.RED);
+
+		for(Blocks block:PlaySnake.blockList){
+			int x = block.getBlockX() * squareSize;
+			int y = block.getBlockY() * squareSize;
+
+			g.fillRect(x + 1, y+1, squareSize-1, squareSize-1);
+		}
+
+	}
+
 	private void displaySnake(Graphics g) {
 
 		LinkedList<Point> coordinates = snake.segmentsToDraw();
@@ -142,14 +167,20 @@ public class DrawSnakeGamePanel extends JPanel {
 
 	}
 
-	private void displayInstructions(Graphics g) {
-        g.drawString("Press any key to begin!",100,200);		
-        g.drawString("Press q to quit the game",100,300);		
+	public void displayInstructions(Graphics g) {
+        g.drawString("Press ENTER to begin!",100,100);
+        g.drawString("Press 'q' to quit the game",100,115);
+		g.drawString("Press 's' to change the size",100,160);
+		g.drawString("Current size: " + currentSize, 100, 175);
+		g.drawString("Press 'w' to turn on warp walls", 100, 220);
+		g.drawString("Warp Walls: " + Snake.warpWallsOn, 100 , 235);
+		g.drawString("Press the space bar to change the speed.", 100, 280);
+		g.drawString("Speed: " + PlaySnake.speed, 100, 295);
+		g.drawString("Press 'b' to turn blocks off and on", 100, 355);
+		g.drawString("Blocks: " + Blocks.blockString, 100, 370);
     	}
 
 
-	static JFrame snakeFrame;
-	static DrawSnakeGamePanel gamePanel;
 	//Framework for this class adapted from the Java Swing Tutorial, FrameDemo and Custom Painting Demo. You should find them useful too.
 	//http://docs.oracle.com/javase/tutorial/displayCode.html?code=http://docs.oracle.com/javase/tutorial/uiswing/examples/components/FrameDemoProject/src/components/FrameDemo.java
 	//http://docs.oracle.com/javase/tutorial/uiswing/painting/step2.html
@@ -169,9 +200,46 @@ public class DrawSnakeGamePanel extends JPanel {
 		gamePanel.requestFocusInWindow(); //required to give this component the focus so it can generate KeyEvents
 
 		snakeFrame.add(gamePanel);
-		gamePanel.addKeyListener(new GameControls(snake));
+		gamePanel.addKeyListener(new GameControls(snake, kibble, gamePanel));
 
 		snakeFrame.setVisible(true);
 		return gamePanel;
+	}
+
+	public void changeSize(Snake snake){
+		if (currentSize.equals("small")) {
+			xPixelMaxDimension = MEDIUM_X;
+			yPixelMaxDimension = MEDIUM_Y;
+			currentSize = "medium";
+			snake.setMax(xSquares, ySquares);
+		}
+		else if (currentSize.equals("medium")) {
+			xPixelMaxDimension = LARGE_X;
+			yPixelMaxDimension = LARGE_Y;
+			currentSize = "large";
+			snake.setMax(xSquares, ySquares);
+		}
+		else if(currentSize.equals("large")) {
+			xPixelMaxDimension = SMALL_X;
+			yPixelMaxDimension = SMALL_Y;
+			currentSize = "small";
+			snake.setMax(xSquares, ySquares);
+		}
+	}
+
+	public void setFrame(){
+		snakeFrame.setSize(xPixelMaxDimension, yPixelMaxDimension);
+	}
+
+	public static int getXSquares() {
+		return xSquares;
+	}
+
+	public static int getYSquares() {
+		return ySquares;
+	}
+
+	public static int getSquareSize() {
+		return squareSize;
 	}
 }

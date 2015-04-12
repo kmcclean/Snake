@@ -2,7 +2,7 @@
  * 
  */
 
-
+/*
 public class Score {
 
 	protected static int score;
@@ -63,3 +63,4 @@ public class Score {
 	
 }
 
+*/

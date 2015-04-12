@@ -8,27 +8,44 @@ public class Kibble {
 	 */
 	private int kibbleX; //This is the square number (not pixel)
 	private int kibbleY;  //This is the square number (not pixel)
+	private int kibbleSquares[][];
 	
-	public Kibble(Snake s, DrawSnakeGamePanel sp){
+	public Kibble(){
 		//Kibble needs to know where the snake is, so it does not create a kibble in the snake
 		//Pick a random location for kibble, check if it is in the snake
 		//If in snake, try again
-		moveKibble(s, sp);
+		//placeKibble(s, sp);
 	}
 	
-	protected void moveKibble(Snake s, DrawSnakeGamePanel snakePanel){
+	protected void placeKibble(Snake s, DrawSnakeGamePanel snakePanel){
 		
 		Random rng = new Random();
 		boolean kibbleInSnake = true;
-		while (kibbleInSnake == true) {
+		boolean kibbleOnBlock = true;
+		while (kibbleInSnake || kibbleOnBlock) {
 			//Generate random kibble location
+			kibbleOnBlock = false;
 			kibbleX = rng.nextInt(snakePanel.xSquares);
 			kibbleY = rng.nextInt(snakePanel.ySquares);
 			kibbleInSnake = s.isSnakeSegment(kibbleX, kibbleY);
+			for (Blocks b:PlaySnake.blockList){
+				kibbleOnBlock = b.isBlocksSquare(kibbleX, kibbleY);
+				if (kibbleOnBlock){
+					kibbleOnBlock = true;
+					break;
+				}
+			}
 		}
-		
-		
+		kibbleSquares = new int[kibbleX][kibbleY];
 	}
+
+	public boolean isKibbleSquare(int tryX, int tryY) {
+		if (getKibbleX() == tryX && getKibbleY() == tryY) {
+			return true;
+		}
+		return false;
+	}
+
 
 	public int getKibbleX() {
 		return kibbleX;

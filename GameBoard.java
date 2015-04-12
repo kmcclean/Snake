@@ -1,10 +1,21 @@
-import javax.swing.*;
+/*import javax.swing.*;
 /**
  * Created by Kevin on 4/5/2015.
  */
+/*
 public class GameBoard extends JPanel{
-    public final static int xPixelMaxDimension = 501;  //Pixels in window. 501 to have 50-pixel squares plus 1 to draw a border on last square
-    public final static int yPixelMaxDimension = 501;
+    public static final int SMALL_X = 201;
+    public static final int SMALL_Y = 201;
+
+    public static final int MEDIUM_X = 501;
+    public static final int MEDIUM_Y = 501;
+
+    public static final int LARGE_X = 801;
+    public static final int LARGE_Y = 801;
+
+    public static String currentSize = "medium";
+    public static int xPixelMaxDimension = MEDIUM_X;  //Pixels in window. 501 to have 50-pixel squares plus 1 to draw a border on last square
+    public static int yPixelMaxDimension = MEDIUM_Y;
 
     public final static int squareSize = 50;
 
@@ -32,7 +43,7 @@ public class GameBoard extends JPanel{
         gamePanel.requestFocusInWindow(); //required to give this component the focus so it can generate KeyEvents
 
         snakeFrame.add(gamePanel);
-        gamePanel.addKeyListener(new GameControls(snake));
+        gamePanel.addKeyListener(new GameControls(snake, kibble, gamePanel));
 
         snakeFrame.setVisible(true);
         return gamePanel;
@@ -53,4 +64,23 @@ public class GameBoard extends JPanel{
     public static int getSquareSize() {
         return squareSize;
     }
+
+    public void changeSize(){
+        if (currentSize.equals("small")) {
+            xPixelMaxDimension = MEDIUM_X;
+            yPixelMaxDimension = MEDIUM_Y;
+            currentSize = "medium";
+        }
+        else if (currentSize.equals("medium")) {
+            xPixelMaxDimension = LARGE_X;
+            yPixelMaxDimension = LARGE_Y;
+            currentSize = "large";
+        }
+        else if(currentSize.equals("large")) {
+            xPixelMaxDimension = SMALL_X;
+            yPixelMaxDimension = SMALL_Y;
+            currentSize = "small";
+        }
+    }
 }
+*/
