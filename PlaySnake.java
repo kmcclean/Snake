@@ -18,11 +18,13 @@ public class PlaySnake {
     public static String speed = "Medium";
     protected static long clockInterval = MEDIUM;
 
-    protected static DrawSnakeGamePanel snakePanel;
+    protected static DrawSnakeGamePanel gamePanel;
     public static long beginTime = System.currentTimeMillis();
     public static boolean resetGame = false;
 
     public static ArrayList<Blocks> blockList = new ArrayList<Blocks>();
+    public static ArrayList<Snake> snakeList = new ArrayList<Snake>();
+    public static ArrayList<Kibble> kibbleList = new ArrayList<Kibble>();
 
 
     static final int BEFORE_GAME = 1;
@@ -39,10 +41,12 @@ public class PlaySnake {
 
     public PlaySnake(int score) {
         this.gameScore = score;
-        this.snakePanel = new DrawSnakeGamePanel(snake, kibble, score);
-        this.snake = new Snake(snakePanel.xSquares, snakePanel.ySquares, snakePanel.squareSize);
+        this.gamePanel = new DrawSnakeGamePanel(snake, kibble, score);
+        this.snake = new Snake(gamePanel.xSquares, gamePanel.ySquares, gamePanel.squareSize, gamePanel);
+        this.snakeList.add(snake);
         this.kibble = new Kibble();
-        this.snakePanel = snakePanel.createAndShowGUI(snake, kibble, score);
+        this.kibbleList.add(kibble);
+        this.gamePanel = gamePanel.createAndShowGUI(snake, kibble, score);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -53,7 +57,7 @@ public class PlaySnake {
     }
 
     public static void runSnake() {
-        GameClock clockTick = new GameClock(snake, kibble, gameScore, snakePanel, timer, clockInterval);
+        GameClock clockTick = new GameClock(snake, kibble, gameScore, gamePanel, timer, clockInterval);
         timer.scheduleAtFixedRate(clockTick, 0, clockInterval);
         if (gameStage == GAME_OVER){
             return;
@@ -87,11 +91,11 @@ public class PlaySnake {
             clockInterval = MEDIUM;
             speed = "Medium";
         }
-        if(speed.equals("Medium")){
+        else if(speed.equals("Medium")){
             clockInterval = FAST;
             speed = "Fast";
         }
-        if(speed.equals("Fast")){
+        else if(speed.equals("Fast")){
             clockInterval = SLOW;
             speed = "Slow";
         }

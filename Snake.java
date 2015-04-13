@@ -29,20 +29,20 @@ public class Snake {
 
 	private int justAteMustGrowThisMuch = 0;
 
-	private int maxX, maxY, squareSize;  
-	private int snakeHeadX, snakeHeadY; //store coordinates of head - first segment
+	public static int maxX, maxY, squareSize;
+	public int snakeHeadX, snakeHeadY; //store coordinates of head - first segment
 
-	public Snake(int maxX, int maxY, int squareSize){
-		this.maxX = maxX;
-		this.maxY = maxY;
+	public Snake(int maxX, int maxY, int squareSize, DrawSnakeGamePanel gamePanel){
+		this.maxX = gamePanel.xSquares;
+		this.maxY = gamePanel.ySquares;
 		this.squareSize = squareSize;
 		//Create and fill snakeSquares with 0s 
 		snakeSquares = new int[maxX][maxY];
 		fillSnakeSquaresWithZeros();
-		startSnake();
+		startSnake(gamePanel);
 	}
 
-	protected void startSnake(){//int maxX, int maxY, int squareSize){
+	protected void startSnake(DrawSnakeGamePanel gamePanel){//int maxX, int maxY, int squareSize){
 		/*this.maxX = maxX;
 		this.maxY = maxY;
 		this.squareSize = squareSize;
@@ -50,6 +50,14 @@ public class Snake {
 		snakeSquares = new int[maxX][maxY];
 		fillSnakeSquaresWithZeros();*/
 		//snake starts as 3 horizontal squares in the center of the screen, moving left
+
+		this.maxX = gamePanel.xSquares;
+		this.maxY = gamePanel.ySquares;
+		this.squareSize = gamePanel.squareSize;
+		//Create and fill snakeSquares with 0s
+		snakeSquares = new int[maxX][maxY];
+		fillSnakeSquaresWithZeros();
+
 		int screenXCenter = (int) maxX/2;  //Cast just in case we have an odd number
 		int screenYCenter = (int) maxY/2;  //Cast just in case we have an odd number
 
@@ -140,10 +148,10 @@ public class Snake {
 		//Did you hit the wall, snake? 
 		//Or eat your tail? Don't move. 
 
-		if (hitWall == true || ateTail == true) {
+		/*if (hitWall == true || ateTail == true) {
 			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
-		}
+		}*/
 
 		//Use snakeSquares array, and current heading, to move snake
 
@@ -201,7 +209,12 @@ public class Snake {
 			return;
 		}
 
-		if(hitBlock()){
+		/*if(hitBlock()){
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
+			return;
+		}*/
+
+		if (hitWall||ateTail||hitBlock()) {
 			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
 		}
@@ -295,11 +308,11 @@ public class Snake {
 		return true;
 	}
 
-	public void reset() {
+	public void reset(DrawSnakeGamePanel gamePanel) {
 		hitWall = false;
 		ateTail = false;
 		fillSnakeSquaresWithZeros();
-		startSnake();
+		startSnake(gamePanel);
 	}
 
 	public boolean isGameOver() {

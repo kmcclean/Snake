@@ -29,11 +29,11 @@ public class GameControls implements KeyListener{
 		char start = ev.getKeyChar();
 		DrawSnakeGamePanel panel = (DrawSnakeGamePanel) ev.getComponent();
 
-		if ((int) start == START_BUTTON&&PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME) {
+		if ((int) start == START_BUTTON && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME) {
 			//Start the game
 			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
 			gamePanel.setFrame();
-			snake.startSnake();
+			snake.startSnake(gamePanel);
 			kibble.placeKibble(snake, gamePanel);
 			if (Blocks.wantsBlocks) {
 				PlaySnake.blockList.clear();
@@ -51,7 +51,7 @@ public class GameControls implements KeyListener{
 
 
 		if (PlaySnake.getGameStage() == PlaySnake.GAME_OVER) {
-			snake.reset();
+			snake.reset(gamePanel);
 			SnakeGame.resetScore();
 			kibble.placeKibble(snake, gamePanel);
 
@@ -100,6 +100,7 @@ public class GameControls implements KeyListener{
 		char w = 'w';
 		char b = 'b';
 		char s = 's';
+		char t = 't';
 		if( keyPressed == q){
 			System.exit(0);    //quit if user presses the q key.
 		}
@@ -127,7 +128,18 @@ public class GameControls implements KeyListener{
 			gamePanel.changeSize(snake);
 		}
 
-		if((int)keyPressed == 32){
+		if (keyPressed == t && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
+			if(kibble.teleportingKibble){
+				kibble.teleportingKibble = false;
+				kibble.teleportingString = "Off";
+			}
+			else {
+				kibble.teleportingKibble = true;
+				kibble.teleportingString = "On";
+			}
+		}
+
+		if((int)keyPressed == 32 && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
 			PlaySnake.changeSpeed();
 		}
 	}

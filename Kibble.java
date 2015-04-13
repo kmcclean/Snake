@@ -8,7 +8,11 @@ public class Kibble {
 	 */
 	private int kibbleX; //This is the square number (not pixel)
 	private int kibbleY;  //This is the square number (not pixel)
+	public static int kibbleTeleportCounter = 0;
 	private int kibbleSquares[][];
+
+	public static boolean teleportingKibble = false;
+	public static String teleportingString = "Off";
 	
 	public Kibble(){
 		//Kibble needs to know where the snake is, so it does not create a kibble in the snake
@@ -37,6 +41,7 @@ public class Kibble {
 			}
 		}
 		kibbleSquares = new int[kibbleX][kibbleY];
+		kibbleTeleportCounter = 0;
 	}
 
 	public boolean isKibbleSquare(int tryX, int tryY) {
