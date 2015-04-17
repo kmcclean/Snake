@@ -12,34 +12,36 @@ public class Blocks {
     private int blockY;
     private int blockSquares[][];
 
-
+    //creates a new block.
     public Blocks(Snake s, DrawSnakeGamePanel snakePanel, Kibble k) {
         Random rng = new Random();
         boolean snakeLocation = true;
-        boolean kibbleLocation = true;
-        while (snakeLocation) {// || kibbleLocation) {
+        while (snakeLocation) {
             this.blockX = rng.nextInt(snakePanel.xSquares);
             this.blockY = rng.nextInt(snakePanel.ySquares);
             snakeLocation = s.isSnakeSegment(blockX, blockY);
-//            kibbleLocation = k.isKibbleSquare(blockX, blockY);
         }
         this.blockSquares = new int[blockX][blockY];
     }
-    protected void moveBlock(Snake s, DrawSnakeGamePanel snakePanel, Kibble k){
 
+    //this moves the block after each game of snake.
+    protected void moveBlock(Snake s, DrawSnakeGamePanel snakePanel, Kibble k){
         Random rng = new Random();
-        boolean kibbleInSnake = true;
+        boolean blockInSnake = true;
         boolean blockOnKibble = true;
-        while (kibbleInSnake || blockOnKibble) {
+
+        //makes sure that the block doesn't land on the same
+        while (blockInSnake || blockOnKibble) {
             blockOnKibble = false;
             this.blockX = rng.nextInt(snakePanel.xSquares);
             this.blockY = rng.nextInt(snakePanel.ySquares);
-            kibbleInSnake = s.isSnakeSegment(this.blockX, this.blockY);
+            blockInSnake = s.isSnakeSegment(this.blockX, this.blockY);
             k.isKibbleSquare(blockX, blockY);
         }
         this.blockSquares= new int[blockX][blockY];
     }
 
+    //checks to see if the block is on a specific square.
     public boolean isBlocksSquare(int tryX, int tryY){
         if (getBlockX() == tryX && getBlockY() == tryY){
             return true;
@@ -47,11 +49,13 @@ public class Blocks {
         return false;
     }
 
+    //gts the X coordinate of the block.
     public int getBlockY() {
-        return blockY;
+        return this.blockY;
     }
 
+    //gets the Y coordinate of the block.
     public int getBlockX() {
-        return blockX;
+        return this.blockX;
     }
 }

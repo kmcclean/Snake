@@ -33,30 +33,19 @@ public class Snake {
 	public int snakeHeadX, snakeHeadY; //store coordinates of head - first segment
 
 	public Snake(int maxX, int maxY, int squareSize, DrawSnakeGamePanel gamePanel){
-		this.maxX = gamePanel.xSquares;
-		this.maxY = gamePanel.ySquares;
-		this.squareSize = squareSize;
-		//Create and fill snakeSquares with 0s 
-		snakeSquares = new int[maxX][maxY];
-		fillSnakeSquaresWithZeros();
+		setSnakeParameters(maxX, maxY, squareSize);
+
+		//Create and fill snakeSquares with 0s
+		fillSquares(maxX, maxY);
 		startSnake(gamePanel);
 	}
 
 	protected void startSnake(DrawSnakeGamePanel gamePanel){//int maxX, int maxY, int squareSize){
-		/*this.maxX = maxX;
-		this.maxY = maxY;
-		this.squareSize = squareSize;
-		//Create and fill snakeSquares with 0s
-		snakeSquares = new int[maxX][maxY];
-		fillSnakeSquaresWithZeros();*/
-		//snake starts as 3 horizontal squares in the center of the screen, moving left
+		setSnakeParameters(maxX, maxY, squareSize);
 
-		this.maxX = gamePanel.xSquares;
-		this.maxY = gamePanel.ySquares;
-		this.squareSize = gamePanel.squareSize;
 		//Create and fill snakeSquares with 0s
-		snakeSquares = new int[maxX][maxY];
-		fillSnakeSquaresWithZeros();
+		fillSquares(this.maxX, this.maxY);
+		//snake starts as 3 horizontal squares in the center of the screen, moving left
 
 		int screenXCenter = (int) maxX/2;  //Cast just in case we have an odd number
 		int screenYCenter = (int) maxY/2;  //Cast just in case we have an odd number
@@ -121,12 +110,8 @@ public class Snake {
 		currentHeading = DIRECTION_RIGHT;
 	}
 
-//	public void	eatKibble(){
-//		//record how much snake needs to grow after eating food
-//		justAteMustGrowThisMuch += growthIncrement;
-//	}
+	protected boolean moveSnake(){
 
-	protected void moveSnake(){
 		//Called every clock tick
 		
 		//Must check that the direction snake is being sent in is not contrary to current heading
@@ -144,14 +129,7 @@ public class Snake {
 		if (currentHeading == DIRECTION_RIGHT && lastHeading == DIRECTION_LEFT) {
 			currentHeading = DIRECTION_LEFT; //keep going the same way
 		}
-		
-		//Did you hit the wall, snake? 
-		//Or eat your tail? Don't move. 
 
-		/*if (hitWall == true || ateTail == true) {
-			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
-			return;
-		}*/
 
 		//Use snakeSquares array, and current heading, to move snake
 
@@ -193,32 +171,20 @@ public class Snake {
 
 		if (warpOn){
 			warpWalls();
-		}
+		}/*
 		else{
 			hitWall = hardWalls();
-		}
+		}*/
 
-		if (hitWall){
-			return;
-		}
 
-		//Does this make the snake eat its tail?
-		if (snakeSquares[snakeHeadX][snakeHeadY] != 0) {
-			ateTail = true;
-			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
-			return;
-		}
-
-		/*if(hitBlock()){
+		/*if (didHitWall()|| didEatTail()|| didHitBlock()) {
 			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return;
 		}*/
 
-		if (hitWall||ateTail||hitBlock()) {
-			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
-			return;
+		if(isGameOver()){
+			return false;
 		}
-
 		//Otherwise, game is still on. Add new head
 		snakeSquares[snakeHeadX][snakeHeadY] = 1; 
 
@@ -240,20 +206,12 @@ public class Snake {
 			justAteMustGrowThisMuch -- ;
 			snakeSize ++;
 		}
-		
 		lastHeading = currentHeading; //Update last confirmed heading
+		return true;
 
 	}
 
-	protected boolean didHitWall(){
-		return hitWall;
-
-	}
-
-	protected boolean didEatTail(){
-		return ateTail;
-	}
-
+	//determines whether or not a given square is occupied by the snake.
 	public boolean isSnakeSegment(int tryX, int tryY) {
 		if (snakeSquares[tryX][tryY] == 0) {
 			return false;
@@ -261,6 +219,7 @@ public class Snake {
 		return true;
 	}
 
+	//checks to see if the snake did eat some kibble.
 	public boolean didEatKibble(Kibble kibble) {
 		//Is this kibble in the snake? It should be in the same square as the snake's head
 		if (kibble.getKibbleX() == snakeHeadX && kibble.getKibbleY() == snakeHeadY){
@@ -270,7 +229,19 @@ public class Snake {
 		return false;
 	}
 
-	public boolean hitBlock(){
+	//checks to see if the snake ran into its own tail.
+	public boolean didEatTail() {
+		if (snakeSquares[snakeHeadX][snakeHeadY] != 0) {
+			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	//checks to see if the snake ran into a block.
+	public boolean didHitBlock(){
 		for (Blocks b: PlaySnake.blockList) {
 			if (b.getBlockX() == snakeHeadX && b.getBlockY() == snakeHeadY) {
 				return true;
@@ -279,6 +250,7 @@ public class Snake {
 		return false;
 	}
 
+	//puts the snake into a string.
 	public String toString(){
 		String textsnake = "";
 		//This looks the wrong way around. Actually need to do it this way or snake is drawn flipped 90 degrees. 
@@ -291,23 +263,7 @@ public class Snake {
 		return textsnake;
 	}
 
-	public boolean wonGame() {
-
-		//If all of the squares have snake segments in, the snake has eaten so much kibble 
-		//that it has filled the screen. Win!
-		for (int x = 0 ; x < maxX ; x++) {
-			for (int y = 0 ; y < maxY ; y++){
-				if (snakeSquares[x][y] == 0) {
-					//there is still empty space on the screen, so haven't won
-					return false;
-				}
-			}
-		}
-		//But if we get here, the snake has filled the screen. win!
-		PlaySnake.setGameStage(PlaySnake.GAME_WON);
-		return true;
-	}
-
+	//resets the game to its starting point.
 	public void reset(DrawSnakeGamePanel gamePanel) {
 		hitWall = false;
 		ateTail = false;
@@ -315,24 +271,16 @@ public class Snake {
 		startSnake(gamePanel);
 	}
 
+	//this checks to see if the game has been lost.
 	public boolean isGameOver() {
-		if (hitWall == true || ateTail == true){
+		if (didHitWall()|| didEatTail() || didHitBlock()){
 			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
 			return true;
 		}
 		return false;
 	}
 
-	public int getSnakeHeadX() {
-		return snakeHeadX;
-	}
-
-	public int getSnakeHeadY() {
-		return snakeHeadY;
-	}
-
-
-
+	//this is the setting for warp walls.
 	public void warpWalls() {
 		if (snakeHeadX >= maxX) {
 			snakeHeadX = 0;
@@ -345,12 +293,9 @@ public class Snake {
 		}
 	}
 
-		//Does this make snake hit the wall?
-		//This is where the hitting the wall comes into play. Greyed out to try warp walls.
-
-	public boolean hardWalls() {
-		if (snakeHeadX >= maxX || snakeHeadX < 0 || snakeHeadY >= maxY || snakeHeadY < 0) {
-			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
+	//this is the setting for hard walls. This is used when warp walls are turned off.
+	public boolean didHitWall() {
+		if ((snakeHeadX >= maxX || snakeHeadX < 0 || snakeHeadY >= maxY || snakeHeadY < 0) && (!warpOn)) {
 			return true;
 		}
 		else{
@@ -358,8 +303,25 @@ public class Snake {
 		}
 	}
 
-	public void setMax(int newX, int newY) {
+	//checks to see if the game has been won.
+	public boolean checkForVictory(){
+		if(snakeSize >= ((maxX * maxY) - PlaySnake.blockList.size())){
+			PlaySnake.setGameStage(PlaySnake.GAME_WON);
+			return true;
+		}
+		return false;
+	}
+
+	//sets the parameters of the snake's movement. Used so that match that of the game panel.
+	public void setSnakeParameters(int newX, int newY, int squareSize) {
 		this.maxX = newX;
 		this.maxY = newY;
+		this.squareSize = squareSize;
+	}
+
+	//fills all the squares that the snakeOccupies with 1 and the rest with 0s.
+	public void fillSquares (int maxX, int maxY){
+		this.snakeSquares = new int [maxX][maxY];
+		fillSnakeSquaresWithZeros();
 	}
 }

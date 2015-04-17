@@ -1,13 +1,22 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Timer;
 
 public class GameControls implements KeyListener{
-	
+
+	public static final long SLOW = 1000;
+	public static final long MEDIUM = 500;
+	public static final long FAST = 250;
+	public static String speed = "Medium";
+	protected static long clockInterval = MEDIUM;
+	protected static Timer timer = new Timer();
+
 	Snake snake;
 	Kibble kibble;
 	DrawSnakeGamePanel gamePanel;
-	private static final int START_BUTTON = 10;
 
+	//'Enter' key.
+	private static final int PLAY_GAME_BUTTON = 10;
 
 	GameControls(Snake s, Kibble k, DrawSnakeGamePanel gP){
 		this.snake = s;
@@ -26,35 +35,36 @@ public class GameControls implements KeyListener{
 		//Hopefully, a DrawSnakeGamePanel object.
 		//It would be a good idea to catch a ClassCastException here. 
 
-		char start = ev.getKeyChar();
+		char buttonPress = ev.getKeyChar();
 		DrawSnakeGamePanel panel = (DrawSnakeGamePanel) ev.getComponent();
 
-		if ((int) start == START_BUTTON && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME) {
+		//this allows the game to start if the player presses the 'Enter' key.
+		if ((int) buttonPress == PLAY_GAME_BUTTON && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME) {
 			//Start the game
 			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
-			gamePanel.setFrame();
+			gamePanel.snakeFrame.setSize(gamePanel.xPixelMaxDimension, gamePanel.yPixelMaxDimension);
 			snake.startSnake(gamePanel);
 			kibble.placeKibble(snake, gamePanel);
 			if (Blocks.wantsBlocks) {
 				PlaySnake.blockList.clear();
-				for (int i = 1; i <= 5; i++) {
+				int numberOfBlocks = (int)((gamePanel.xSquares * gamePanel.ySquares)/20);
+				for (int i = 1; i <= numberOfBlocks; i++) {
 					Blocks block = new Blocks(snake, gamePanel, kibble);
 					PlaySnake.blockList.add(block);
 				}
 
 			}
-
 			PlaySnake.runSnake();
 			panel.repaint();
 			return;
 		}
 
-
-		if (PlaySnake.getGameStage() == PlaySnake.GAME_OVER) {
+		//allows the player to restart if they have lost at snake.
+		if ((int) buttonPress == PLAY_GAME_BUTTON && PlaySnake.getGameStage() == PlaySnake.GAME_OVER) {
+			gamePanel.snakeFrame.setSize(gamePanel.xPixelMaxDimension, gamePanel.yPixelMaxDimension);
 			snake.reset(gamePanel);
 			SnakeGame.resetScore();
 			kibble.placeKibble(snake, gamePanel);
-
 			for (Blocks b : PlaySnake.blockList) {
 				b.moveBlock(snake, gamePanel, kibble);
 			}
@@ -104,6 +114,8 @@ public class GameControls implements KeyListener{
 		if( keyPressed == q){
 			System.exit(0);    //quit if user presses the q key.
 		}
+
+		//turns warp walls on and off.
 		if(keyPressed == w && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
 			if(Snake.warpOn){
 				Snake.warpOn = false;
@@ -113,7 +125,10 @@ public class GameControls implements KeyListener{
 				Snake.warpOn = true;
 				Snake.warpWallsOn = "On";
 			}
+			gamePanel.repaint();
 		}
+
+		//turns blocks on and off.
 		if (keyPressed == b){
 			if (Blocks.wantsBlocks){
 				Blocks.wantsBlocks = false;
@@ -123,11 +138,15 @@ public class GameControls implements KeyListener{
 				Blocks.wantsBlocks = true;
 				Blocks.blockString = "On";
 			}
+			gamePanel.repaint();
 		}
+
+		//changes the size of the board being used.
 		if (keyPressed == s && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
 			gamePanel.changeSize(snake);
 		}
 
+		//turns teleporting kibble on and off.
 		if (keyPressed == t && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
 			if(kibble.teleportingKibble){
 				kibble.teleportingKibble = false;
@@ -139,9 +158,12 @@ public class GameControls implements KeyListener{
 			}
 		}
 
+		//changes the speed at which the snake moves.
 		if((int)keyPressed == 32 && PlaySnake.getGameStage() == PlaySnake.BEFORE_GAME){
 			PlaySnake.changeSpeed();
 		}
-	}
 
+		gamePanel.repaint();
+
+	}
 }

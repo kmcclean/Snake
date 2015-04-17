@@ -10,8 +10,11 @@ public class GameClock extends TimerTask {
 	Timer timer;
 	long clockInterval;
 
+	/*public GameClock(){
 
-	public GameClock(Snake snake, Kibble kibble, int score, DrawSnakeGamePanel gamePanel, Timer timer, long clock){
+	}*/
+
+	public void setupGameClock(Snake snake, Kibble kibble, int score, DrawSnakeGamePanel gamePanel, Timer timer, long clock){
 		this.snake = snake;
 		this.kibble = kibble;
 		this.score = score;
@@ -23,18 +26,18 @@ public class GameClock extends TimerTask {
 	@Override
 	public void run() {
 		// This method will be called every clock tick
+		long endTime= System.currentTimeMillis();
+		System.out.println("Time between turns is: " + (endTime-PlaySnake.beginTime));
+		PlaySnake.beginTime = endTime;
 
 		int stage = PlaySnake.getGameStage();
 		switch (stage) {
 			case PlaySnake.BEFORE_GAME: {
-				System.out.println("Snake max screen size before game: " + snake.maxX +", " + snake.maxY);
-				System.out.println("Game max sizes before game: " + gamePanel.xSquares + ", " + gamePanel.ySquares);
-
+				PlaySnake.stopClock();
 				break;
 			}
 			case PlaySnake.DURING_GAME: {
-				System.out.println("Snake max screen size during game: " + snake.maxX +", " + snake.maxY);
-				System.out.println("Game max sizes during game: " + gamePanel.xPixelMaxDimension + ", " + gamePanel.yPixelMaxDimension);
+				//runs the teleporter if it is turned on.
 				if(kibble.teleportingKibble) {
 					Kibble.kibbleTeleportCounter++;
 					if (Kibble.kibbleTeleportCounter >= 5) {
@@ -42,24 +45,27 @@ public class GameClock extends TimerTask {
 						Kibble.kibbleTeleportCounter = 0;
 					}
 				}
-				snake.moveSnake();
 
-
-				/*long endTime = System.currentTimeMillis();
-				System.out.println("Time between turns: " + (endTime - PlaySnake.beginTime));
-				PlaySnake.beginTime = System.currentTimeMillis();*/
-
-
+				//moves the snake.
+				if(!snake.moveSnake()){
+					return;
+				}
+				//checks to see if the kibble was eaten. the game then checks the score to see if the game was won...
+				//...and ends the game if it was. Otherwise it continues the game.
 				if (snake.didEatKibble(kibble) == true) {
-					//tell kibble to update
-					kibble.placeKibble(snake, gamePanel);
 					SnakeGame.increaseScore();
+					if(snake.checkForVictory()){
+						PlaySnake.setGameStage(PlaySnake.GAME_WON);
+						return;
+					}
+					kibble.placeKibble(snake, gamePanel);
 				}
 				break;
 			}
-			case PlaySnake.GAME_OVER: {
 
-				this.cancel();		//Stop the Timer
+
+			case PlaySnake.GAME_OVER: {
+				PlaySnake.timer.purge();
 				break;	
 			}
 			case PlaySnake.GAME_WON: {

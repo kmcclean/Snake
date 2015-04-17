@@ -11,21 +11,23 @@ public class Kibble {
 	public static int kibbleTeleportCounter = 0;
 	private int kibbleSquares[][];
 
+	//these are used when the player chooses to have the kibble's teleporting ability (i.e. rerandomize its location) turned on.
 	public static boolean teleportingKibble = false;
 	public static String teleportingString = "Off";
 	
+
 	public Kibble(){
-		//Kibble needs to know where the snake is, so it does not create a kibble in the snake
-		//Pick a random location for kibble, check if it is in the snake
-		//If in snake, try again
-		//placeKibble(s, sp);
 	}
-	
+
+
+	//this places the kibble on a random square within the game panel. It keeps trying until it puts it in a spot not occupied by either the snake or a block.
+	//mainly the version that originally existed in the original conception.
 	protected void placeKibble(Snake s, DrawSnakeGamePanel snakePanel){
 		
 		Random rng = new Random();
 		boolean kibbleInSnake = true;
 		boolean kibbleOnBlock = true;
+		int count = 1;
 		while (kibbleInSnake || kibbleOnBlock) {
 			//Generate random kibble location
 			kibbleOnBlock = false;
@@ -44,6 +46,7 @@ public class Kibble {
 		kibbleTeleportCounter = 0;
 	}
 
+	//this checks if the kibble is on a specific square. Used by the block to see if the space is open.
 	public boolean isKibbleSquare(int tryX, int tryY) {
 		if (getKibbleX() == tryX && getKibbleY() == tryY) {
 			return true;
@@ -51,11 +54,12 @@ public class Kibble {
 		return false;
 	}
 
-
+	//this gets the x location of the kibble.
 	public int getKibbleX() {
 		return kibbleX;
 	}
 
+	//this gets the y location of the kibble.
 	public int getKibbleY() {
 		return kibbleY;
 	}

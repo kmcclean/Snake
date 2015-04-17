@@ -9,21 +9,22 @@ import javax.swing.*;
  */
 public class DrawSnakeGamePanel extends JPanel {
 
-	private static int gameStage = PlaySnake.BEFORE_GAME;  //use this to figure out what to paint
+	private static int gameStage = PlaySnake.getGameStage();
 	static JFrame snakeFrame;
 	static DrawSnakeGamePanel gamePanel;
 	private Snake snake;
 	private Kibble kibble;
 	private int score;
 
-	public static final int SMALL_X = 201;
-	public static final int SMALL_Y = 201;
+
+	public static final int SMALL_X = 251;
+	public static final int SMALL_Y = 251;
 
 	public static final int MEDIUM_X = 501;
 	public static final int MEDIUM_Y = 501;
 
-	public static final int LARGE_X = 801;
-	public static final int LARGE_Y = 801;
+	public static final int LARGE_X = 751;
+	public static final int LARGE_Y = 751;
 
 	public static String currentSize = "medium";
 	public static int xPixelMaxDimension = MEDIUM_X;  //Pixels in window. 501 to have 50-pixel squares plus 1 to draw a border on last square
@@ -78,6 +79,7 @@ public class DrawSnakeGamePanel extends JPanel {
 	}
 
 	private void displayGameWon(Graphics g) {
+		snakeFrame.setSize(501, 501);
 		// TODO Replace this with something really special!
 		g.clearRect(100, 100, 350, 350);
 		g.drawString("YOU WON SNAKE!!!", 150, 150);
@@ -85,8 +87,9 @@ public class DrawSnakeGamePanel extends JPanel {
 	}
 
 	protected void displayGameOver(Graphics g) {
+		snakeFrame.setSize(501, 501);
 		g.clearRect(100, 100, 350, 350);
-		g.drawString("GAME OVER", 150, 150);
+		g.drawString("Game Over. Press Enter to Continue", 150, 150);
 
 		String textScore = SnakeGame.getStringScore();
 		String textHighScore = SnakeGame.getStringHighScore();
@@ -186,7 +189,6 @@ public class DrawSnakeGamePanel extends JPanel {
 	//Framework for this class adapted from the Java Swing Tutorial, FrameDemo and Custom Painting Demo. You should find them useful too.
 	//http://docs.oracle.com/javase/tutorial/displayCode.html?code=http://docs.oracle.com/javase/tutorial/uiswing/examples/components/FrameDemoProject/src/components/FrameDemo.java
 	//http://docs.oracle.com/javase/tutorial/uiswing/painting/step2.html
-
 	protected DrawSnakeGamePanel createAndShowGUI(Snake snake, Kibble kibble, int score) {
 		//Create and set up the window.
 		snakeFrame = new JFrame();
@@ -224,7 +226,8 @@ public class DrawSnakeGamePanel extends JPanel {
 		}
 		setXSquares(xPixelMaxDimension);
 		setYSquares(yPixelMaxDimension);
-		snake.setMax(xSquares, ySquares);
+		snake.setSnakeParameters(xSquares, ySquares, squareSize);
+		gamePanel.repaint();
 	}
 
 	public void setFrame() {
