@@ -10,8 +10,8 @@ public class PlaySnake {
     protected static Kibble kibble;
     protected static int gameScore = 0;
     protected static Timer timer = new Timer();
-    protected static Clock clock = new Clock();
-
+    protected static GameClock clockTick;
+    //protected static AISnake aiSnake;
     //these are the game Speeds
     public static final long SLOW = 1000;
     public static final long MEDIUM = 500;
@@ -20,7 +20,6 @@ public class PlaySnake {
     protected static long clockInterval = MEDIUM;
 
     protected static DrawSnakeGamePanel gamePanel;
-    public static boolean resetGame = false;
 
     public static ArrayList<Blocks> blockList = new ArrayList<Blocks>();
     public static ArrayList<Snake> snakeList = new ArrayList<Snake>();
@@ -45,9 +44,11 @@ public class PlaySnake {
         this.gamePanel = new DrawSnakeGamePanel(snake, kibble, score);
         this.snake = new Snake(gamePanel.xSquares, gamePanel.ySquares, gamePanel.squareSize, gamePanel);
         this.snakeList.add(snake);
+        //this.aiSnake = new AISnake(gamePanel.xSquares, gamePanel.ySquares, gamePanel.squareSize, gamePanel);
         this.kibble = new Kibble();
         this.kibbleList.add(kibble);
         this.gamePanel = gamePanel.createAndShowGUI(snake, kibble, score);
+        this.clockTick = new GameClock();
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -59,10 +60,17 @@ public class PlaySnake {
 
     public static void runSnake() {
 
-        //TODO It may be that this shouldn't be activated until someone chooses to start the clock on the game.
-        GameClock clockTick.setup = new GameClock(snake, kibble, gameScore, gamePanel, timer, clockInterval);
-        //timer.scheduleAtFixedRate(clockTick, 0, clockInterval);
-        clock.runfixedRate(clockTick, clockInterval);
+        //this runs the game. Java throws an IllegalStateException when there are two copies running at the same time...
+        //...so the try/catch is there to handle it.
+        try {
+            clockTick.setupGameClock(snake, kibble, gameScore, gamePanel, timer, clockInterval);
+
+            //the if statement is needed to allow adjustments to the game speed.
+            if (gameStage == DURING_GAME){
+            timer.scheduleAtFixedRate(clockTick, 0, clockInterval);}
+        }
+        catch(IllegalStateException ise){
+        }
     }
 
     //sets the gameStage variable.
@@ -76,7 +84,6 @@ public class PlaySnake {
     }
 
     //this changes the length of the interval between turns, according to the player's selection.
-    //TODO move the clock settings over to the GameControls.
     public static void changeSpeed(){
         if(speed.equals("Slow")){
             clockInterval = MEDIUM;
@@ -91,13 +98,5 @@ public class PlaySnake {
             speed = "Slow";
         }
         gamePanel.repaint();
-    }
-
-    public static void stopClock(){
-        clock.shutOffClock();
-    }
-
-    public static void startClock(GameClock clockTick){//}, long clockInterval){
-        clock.runfixedRate(clockTick, clockInterval);
     }
 }

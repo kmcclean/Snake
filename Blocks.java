@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -7,7 +6,6 @@ import java.util.Random;
 public class Blocks {
     protected static boolean wantsBlocks = false;
     protected static String blockString = "Off";
-
     private int blockX;
     private int blockY;
     private int blockSquares[][];
@@ -30,7 +28,7 @@ public class Blocks {
         boolean blockInSnake = true;
         boolean blockOnKibble = true;
 
-        //makes sure that the block doesn't land on the same
+        //makes sure that the block doesn't land on the same square as the kibble or the snake.
         while (blockInSnake || blockOnKibble) {
             blockOnKibble = false;
             this.blockX = rng.nextInt(snakePanel.xSquares);

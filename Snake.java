@@ -8,9 +8,6 @@ public class Snake {
 	final int DIRECTION_LEFT = 2;
 	final int DIRECTION_RIGHT = 3;  //These are completely arbitrary numbers. 
 
-	private boolean hitWall = false;
-	private boolean ateTail = false;
-
 	protected static boolean warpOn = false;
 	public static String warpWallsOn = "Off";
 
@@ -113,7 +110,6 @@ public class Snake {
 	protected boolean moveSnake(){
 
 		//Called every clock tick
-		
 		//Must check that the direction snake is being sent in is not contrary to current heading
 		//So if current heading is down, and snake is being sent up, then should ignore.
 		//Without this code, if the snake is heading up, and the user presses left then down quickly, the snake will back into itself.
@@ -132,14 +128,11 @@ public class Snake {
 
 
 		//Use snakeSquares array, and current heading, to move snake
-
 		//Put a 1 in new snake head square
 		//increase all other snake segments by 1
 		//set tail to 0 if snake did not just eat
 		//Otherwise leave tail as is until snake has grown the correct amount 
-
 		//Find the head of the snake - snakeHeadX and snakeHeadY
-
 		//Increase all snake segments by 1
 		//All non-zero elements of array represent a snake segment
 
@@ -171,16 +164,7 @@ public class Snake {
 
 		if (warpOn){
 			warpWalls();
-		}/*
-		else{
-			hitWall = hardWalls();
-		}*/
-
-
-		/*if (didHitWall()|| didEatTail()|| didHitBlock()) {
-			PlaySnake.setGameStage(PlaySnake.GAME_OVER);
-			return;
-		}*/
+		}
 
 		if(isGameOver()){
 			return false;
@@ -265,8 +249,6 @@ public class Snake {
 
 	//resets the game to its starting point.
 	public void reset(DrawSnakeGamePanel gamePanel) {
-		hitWall = false;
-		ateTail = false;
 		fillSnakeSquaresWithZeros();
 		startSnake(gamePanel);
 	}
@@ -323,5 +305,16 @@ public class Snake {
 	public void fillSquares (int maxX, int maxY){
 		this.snakeSquares = new int [maxX][maxY];
 		fillSnakeSquaresWithZeros();
+	}
+
+	public int getSnakeSize() {return snakeSize;
+	}
+
+	public static int getMaxX() {
+		return maxX;
+	}
+
+	public static int getMaxY() {
+		return maxY;
 	}
 }

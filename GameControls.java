@@ -3,17 +3,10 @@ import java.awt.event.KeyListener;
 import java.util.Timer;
 
 public class GameControls implements KeyListener{
-
-	public static final long SLOW = 1000;
-	public static final long MEDIUM = 500;
-	public static final long FAST = 250;
-	public static String speed = "Medium";
-	protected static long clockInterval = MEDIUM;
-	protected static Timer timer = new Timer();
-
 	Snake snake;
 	Kibble kibble;
 	DrawSnakeGamePanel gamePanel;
+	//AISnake aiSnake;
 
 	//'Enter' key.
 	private static final int PLAY_GAME_BUTTON = 10;
@@ -22,6 +15,7 @@ public class GameControls implements KeyListener{
 		this.snake = s;
 		this.kibble = k;
 		this.gamePanel = gP;
+		//this.aiSnake = ais;
 	}
 	
 	public void keyPressed(KeyEvent ev) {
@@ -33,8 +27,7 @@ public class GameControls implements KeyListener{
 
 		//Get the component which generated this event
 		//Hopefully, a DrawSnakeGamePanel object.
-		//It would be a good idea to catch a ClassCastException here. 
-
+		//It would be a good idea to catch a ClassCastException here.
 		char buttonPress = ev.getKeyChar();
 		DrawSnakeGamePanel panel = (DrawSnakeGamePanel) ev.getComponent();
 
@@ -44,6 +37,8 @@ public class GameControls implements KeyListener{
 			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
 			gamePanel.snakeFrame.setSize(gamePanel.xPixelMaxDimension, gamePanel.yPixelMaxDimension);
 			snake.startSnake(gamePanel);
+			//aiSnake.startAISnake(gamePanel);
+
 			kibble.placeKibble(snake, gamePanel);
 			if (Blocks.wantsBlocks) {
 				PlaySnake.blockList.clear();
@@ -60,7 +55,7 @@ public class GameControls implements KeyListener{
 		}
 
 		//allows the player to restart if they have lost at snake.
-		if ((int) buttonPress == PLAY_GAME_BUTTON && PlaySnake.getGameStage() == PlaySnake.GAME_OVER) {
+		else if ((int) buttonPress == PLAY_GAME_BUTTON && PlaySnake.getGameStage() == PlaySnake.GAME_OVER) {
 			gamePanel.snakeFrame.setSize(gamePanel.xPixelMaxDimension, gamePanel.yPixelMaxDimension);
 			snake.reset(gamePanel);
 			SnakeGame.resetScore();
@@ -75,6 +70,20 @@ public class GameControls implements KeyListener{
 			return;
 		}
 
+		if ((int) buttonPress == PLAY_GAME_BUTTON && PlaySnake.getGameStage() == PlaySnake.GAME_WON) {
+			gamePanel.snakeFrame.setSize(gamePanel.xPixelMaxDimension, gamePanel.yPixelMaxDimension);
+			snake.reset(gamePanel);
+			SnakeGame.resetScore();
+			kibble.placeKibble(snake, gamePanel);
+			for (Blocks b : PlaySnake.blockList) {
+				b.moveBlock(snake, gamePanel, kibble);
+			}
+			//Need to start the timer and start the game again
+			PlaySnake.setGameStage(PlaySnake.DURING_GAME);
+			PlaySnake.runSnake();
+			panel.repaint();
+			return;
+		}
 
 		if (ev.getKeyCode() == KeyEvent.VK_DOWN) {
 			//System.out.println("snake down");
